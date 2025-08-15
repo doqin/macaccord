@@ -1,0 +1,612 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		567E56FF2E510BCF00851981 /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 567E56FE2E510BCF00851981 /* DequeModule */; };
+		567E57012E510BE900851981 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 567E57002E510BE900851981 /* Collections */; };
+		56C027762E53301600027325 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56C027752E53301600027325 /* AVKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		567E56D22E4FB2D600851981 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 567E56B92E4FB2D400851981 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 567E56C02E4FB2D400851981;
+			remoteInfo = macaccord;
+		};
+		567E56DC2E4FB2D600851981 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 567E56B92E4FB2D400851981 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 567E56C02E4FB2D400851981;
+			remoteInfo = macaccord;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		567E56C12E4FB2D400851981 /* macaccord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macaccord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		567E56D12E4FB2D600851981 /* macaccordTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macaccordTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		567E56DB2E4FB2D600851981 /* macaccordUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macaccordUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		56C027752E53301600027325 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		56F0A8912E52072200A44D75 /* Kingfisher.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:A4YJ9MRZ66:Wei Wang"; lastKnownFileType = wrapper.xcframework; name = Kingfisher.xcframework; path = ../../Downloads/Kingfisher.xcframework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		567E56C32E4FB2D400851981 /* macaccord */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = macaccord;
+			sourceTree = "<group>";
+		};
+		567E56D42E4FB2D600851981 /* macaccordTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = macaccordTests;
+			sourceTree = "<group>";
+		};
+		567E56DE2E4FB2D600851981 /* macaccordUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = macaccordUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		567E56BE2E4FB2D400851981 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56C027762E53301600027325 /* AVKit.framework in Frameworks */,
+				567E57012E510BE900851981 /* Collections in Frameworks */,
+				567E56FF2E510BCF00851981 /* DequeModule in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		567E56CE2E4FB2D600851981 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		567E56D82E4FB2D600851981 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		567E56B82E4FB2D400851981 = {
+			isa = PBXGroup;
+			children = (
+				567E56C32E4FB2D400851981 /* macaccord */,
+				567E56D42E4FB2D600851981 /* macaccordTests */,
+				567E56DE2E4FB2D600851981 /* macaccordUITests */,
+				56F0A8902E52072200A44D75 /* Frameworks */,
+				567E56C22E4FB2D400851981 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		567E56C22E4FB2D400851981 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				567E56C12E4FB2D400851981 /* macaccord.app */,
+				567E56D12E4FB2D600851981 /* macaccordTests.xctest */,
+				567E56DB2E4FB2D600851981 /* macaccordUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		56F0A8902E52072200A44D75 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				56C027752E53301600027325 /* AVKit.framework */,
+				56F0A8912E52072200A44D75 /* Kingfisher.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		567E56C02E4FB2D400851981 /* macaccord */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 567E56E52E4FB2D600851981 /* Build configuration list for PBXNativeTarget "macaccord" */;
+			buildPhases = (
+				567E56BD2E4FB2D400851981 /* Sources */,
+				567E56BE2E4FB2D400851981 /* Frameworks */,
+				567E56BF2E4FB2D400851981 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				567E56C32E4FB2D400851981 /* macaccord */,
+			);
+			name = macaccord;
+			packageProductDependencies = (
+				567E56FE2E510BCF00851981 /* DequeModule */,
+				567E57002E510BE900851981 /* Collections */,
+			);
+			productName = macaccord;
+			productReference = 567E56C12E4FB2D400851981 /* macaccord.app */;
+			productType = "com.apple.product-type.application";
+		};
+		567E56D02E4FB2D600851981 /* macaccordTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 567E56E82E4FB2D600851981 /* Build configuration list for PBXNativeTarget "macaccordTests" */;
+			buildPhases = (
+				567E56CD2E4FB2D600851981 /* Sources */,
+				567E56CE2E4FB2D600851981 /* Frameworks */,
+				567E56CF2E4FB2D600851981 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				567E56D32E4FB2D600851981 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				567E56D42E4FB2D600851981 /* macaccordTests */,
+			);
+			name = macaccordTests;
+			packageProductDependencies = (
+			);
+			productName = macaccordTests;
+			productReference = 567E56D12E4FB2D600851981 /* macaccordTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		567E56DA2E4FB2D600851981 /* macaccordUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 567E56EB2E4FB2D600851981 /* Build configuration list for PBXNativeTarget "macaccordUITests" */;
+			buildPhases = (
+				567E56D72E4FB2D600851981 /* Sources */,
+				567E56D82E4FB2D600851981 /* Frameworks */,
+				567E56D92E4FB2D600851981 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				567E56DD2E4FB2D600851981 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				567E56DE2E4FB2D600851981 /* macaccordUITests */,
+			);
+			name = macaccordUITests;
+			packageProductDependencies = (
+			);
+			productName = macaccordUITests;
+			productReference = 567E56DB2E4FB2D600851981 /* macaccordUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		567E56B92E4FB2D400851981 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					567E56C02E4FB2D400851981 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					567E56D02E4FB2D600851981 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 567E56C02E4FB2D400851981;
+					};
+					567E56DA2E4FB2D600851981 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 567E56C02E4FB2D400851981;
+					};
+				};
+			};
+			buildConfigurationList = 567E56BC2E4FB2D400851981 /* Build configuration list for PBXProject "macaccord" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 567E56B82E4FB2D400851981;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				567E56FD2E510BCF00851981 /* XCRemoteSwiftPackageReference "swift-collections" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 567E56C22E4FB2D400851981 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				567E56C02E4FB2D400851981 /* macaccord */,
+				567E56D02E4FB2D600851981 /* macaccordTests */,
+				567E56DA2E4FB2D600851981 /* macaccordUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		567E56BF2E4FB2D400851981 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		567E56CF2E4FB2D600851981 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		567E56D92E4FB2D600851981 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		567E56BD2E4FB2D400851981 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		567E56CD2E4FB2D600851981 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		567E56D72E4FB2D600851981 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		567E56D32E4FB2D600851981 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 567E56C02E4FB2D400851981 /* macaccord */;
+			targetProxy = 567E56D22E4FB2D600851981 /* PBXContainerItemProxy */;
+		};
+		567E56DD2E4FB2D600851981 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 567E56C02E4FB2D400851981 /* macaccord */;
+			targetProxy = 567E56DC2E4FB2D600851981 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		567E56E32E4FB2D600851981 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		567E56E42E4FB2D600851981 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		567E56E62E4FB2D600851981 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = macaccord/macaccord.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Macaccord;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = doqin.macaccord;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		567E56E72E4FB2D600851981 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = macaccord/macaccord.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Macaccord;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = doqin.macaccord;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		567E56E92E4FB2D600851981 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = doqin.macaccordTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/macaccord.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/macaccord";
+			};
+			name = Debug;
+		};
+		567E56EA2E4FB2D600851981 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = doqin.macaccordTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/macaccord.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/macaccord";
+			};
+			name = Release;
+		};
+		567E56EC2E4FB2D600851981 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = doqin.macaccordUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = macaccord;
+			};
+			name = Debug;
+		};
+		567E56ED2E4FB2D600851981 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G3K6L5JU37;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = doqin.macaccordUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = macaccord;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		567E56BC2E4FB2D400851981 /* Build configuration list for PBXProject "macaccord" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				567E56E32E4FB2D600851981 /* Debug */,
+				567E56E42E4FB2D600851981 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		567E56E52E4FB2D600851981 /* Build configuration list for PBXNativeTarget "macaccord" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				567E56E62E4FB2D600851981 /* Debug */,
+				567E56E72E4FB2D600851981 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		567E56E82E4FB2D600851981 /* Build configuration list for PBXNativeTarget "macaccordTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				567E56E92E4FB2D600851981 /* Debug */,
+				567E56EA2E4FB2D600851981 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		567E56EB2E4FB2D600851981 /* Build configuration list for PBXNativeTarget "macaccordUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				567E56EC2E4FB2D600851981 /* Debug */,
+				567E56ED2E4FB2D600851981 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		567E56FD2E510BCF00851981 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		567E56FE2E510BCF00851981 /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567E56FD2E510BCF00851981 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+		567E57002E510BE900851981 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 567E56FD2E510BCF00851981 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 567E56B92E4FB2D400851981 /* Project object */;
+}
