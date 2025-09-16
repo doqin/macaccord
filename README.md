@@ -5,7 +5,7 @@
 
   Macaccord - A SwiftUI Recreation of Discord
 
-  ![Status](https://img.shields.io/badge/status-WIP-orange) ![GitHub stars](https://img.shields.io/github/stars/bao-langu/bao?style=social)
+  ![Status](https://img.shields.io/badge/status-WIP-orange) ![GitHub stars](https://img.shields.io/github/stars/doqin/macaccord?style=social)
 </div>
 
 # Macaccord
