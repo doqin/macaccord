@@ -38,6 +38,13 @@ class ChannelViewModel: ObservableObject {
             
             // Decode the json
             channels = try decoder.decode([Channel].self, from: data)
+            for idx in channels.indices {
+                if let uint64Value = UInt64(channels[idx].last_message_id ?? "1420070400000") {
+                    channels[idx].last_message_timestamp = snowflakeToDate(uint64Value)
+                } else {
+                    Log.general.warning("Could not get timestamp for channel \(self.channels[idx].id)")
+                }
+            }
         } catch {
             errorMessage = "Failed to fetch: \(error.localizedDescription)"
         }
@@ -46,6 +53,8 @@ class ChannelViewModel: ObservableObject {
 
 struct Channel: Hashable, Codable, Identifiable {
     var id: String
+    var last_message_id: String?
+    var last_message_timestamp: Date?
     var recipients: [User]
 }
 
@@ -80,7 +89,6 @@ struct ChannelView: View {
     let overlap: CGFloat = 16
     let avatarSize: CGFloat = 24
     
-    @EnvironmentObject var discordWebSocket: DiscordWebSocket
     @EnvironmentObject var userData: UserData
     
     var body: some View {
@@ -88,7 +96,6 @@ struct ChannelView: View {
             HStack(spacing: -overlap) {
                 ForEach(channel.recipients) { recipient in
                     AvatarView(userId: recipient.id, size: avatarSize, isShowStatus: true)
-                        .environmentObject(discordWebSocket)
                         .environmentObject(userData)
                 }
             }
@@ -149,9 +156,8 @@ struct DMList: View {
                     }
 
                     Section("Direct Messages") {
-                        ForEach(channels) { channel in
+                        ForEach(channels.sorted(by: { $0.last_message_timestamp ?? snowflakeToDate(1_420_070_400_000) > $1.last_message_timestamp ?? snowflakeToDate(1_420_070_400_000)})) { channel in
                             ChannelView(channel: channel)
-                                .environmentObject(discordWebSocket)
                                 .environmentObject(userData)
                                 .tag(channel)
                         }

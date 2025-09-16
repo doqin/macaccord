@@ -13,9 +13,14 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     
+    @State private var isKeyWindow = true
+    @State private var isMiniaturized = false
+    
     @State private var showInspector = false
     @State private var selection = 1
     @State private var channelSelection: Channel?
+    
+    @State private var messageSubscription: AnyCancellable?
     @State private var presenceUpdateSubscription: AnyCancellable?
     @State private var userSubscription: AnyCancellable?
     
@@ -50,6 +55,7 @@ struct ContentView: View {
                 }
             }
         }
+        .background(WindowStateObserver(isKeyWindow: $isKeyWindow, isMiniaturized: $isMiniaturized))
     }
     
     // MARK: - Sidebar
@@ -142,14 +148,28 @@ struct ContentView: View {
         discordWebSocket.connect()
         userSubscription = discordWebSocket.usersPublisher()
             .receive(on: DispatchQueue.main)
-            .sink { [weak userData] user in
-                userData?.users[user.id] = user
+            .sink { [userData] user in
+                userData.users[user.id] = user
             }
         presenceUpdateSubscription = discordWebSocket.presenceUpdatePublisherFull()
             .receive(on: DispatchQueue.main)
-            .sink { [weak userData] presenceUpdate in
+            .sink { [userData] presenceUpdate in
                 Log.general.info("Updating presence for \(presenceUpdate.user.id): \(presenceUpdate.status)")
-                userData?.users[presenceUpdate.user.id]?.status = presenceUpdate.status
+                userData.users[presenceUpdate.user.id]?.status = presenceUpdate.status
+            }
+        messageSubscription = discordWebSocket.messagesPublisherFull()
+            .receive(on: DispatchQueue.main)
+            .sink { [channelViewModel] message in
+                for idx in channelViewModel.channels.indices {
+                    if channelViewModel.channels[idx].id == message.channel_id {
+                        Log.general.info("Updating last message for \(message.channel_id): \(message.id)")
+                        channelViewModel.channels[idx].last_message_timestamp = message.timestamp
+                        if channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow {
+                            sendNotification(title: message.author.displayName, body: message.content)
+                        }
+                    }
+                }
+                
             }
     }
 

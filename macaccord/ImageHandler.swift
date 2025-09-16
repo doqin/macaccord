@@ -172,8 +172,6 @@ struct AvatarView: View {
     let size: CGFloat
     var isShowStatus: Bool = false
     
-    @State private var presenceUpdateSubscription: AnyCancellable?
-    
     @EnvironmentObject var userData: UserData
     
     var body: some View {

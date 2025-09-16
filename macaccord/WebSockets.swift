@@ -60,6 +60,12 @@ class DiscordWebSocket: NSObject, ObservableObject {
             .eraseToAnyPublisher()
     }
     
+    func messagesPublisherFull() -> AnyPublisher<Message, Never> {
+        messageSubject
+            .map(\.1)
+            .eraseToAnyPublisher()
+    }
+    
     func receiveMessage(channelId: String, message: Message) {
         messageSubject.send((channelId, message))
     }

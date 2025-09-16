@@ -25,6 +25,10 @@ struct macaccordApp: App {
     
     @AppStorage("isLoggedIn") private var isLoggedIn = false
 
+    init() {
+        requestNotificationPermission()
+    }
+    
     var body: some Scene {
         WindowGroup {
             if isLoggedIn {
