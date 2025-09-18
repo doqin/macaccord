@@ -86,7 +86,7 @@ struct ContentView: View {
                 
             }
         case 1:
-            DMList(selection: $channelSelection)
+            DMListView(selection: $channelSelection)
                 .environmentObject(discordWebSocket)
                 .environmentObject(channelViewModel)
                 .environmentObject(userData)
