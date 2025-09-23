@@ -89,7 +89,7 @@ struct DMListView: View {
                         }
                     }
                 }
-                .searchable(text: $searchText, prompt: "Search friends")
+                .searchable(text: $searchText, placement: .sidebar, prompt: "Search friends")
             }
         }
     }

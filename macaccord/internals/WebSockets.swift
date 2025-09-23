@@ -4,7 +4,7 @@ import Compression
 import Collections
 import OSLog
 
-// MARK: - Structs and stuf
+// MARK: - Structs and stuff
 struct DiscordEvent<D: Codable>: Codable {
     let t: String?
     let s: Int?
@@ -48,6 +48,11 @@ struct PresenceUser: Codable {
     let id: String
 }
 
+struct TypingStart: Codable {
+    let user_id: String
+    let channel_id: String
+}
+
 // MARK: - Definitions
 class DiscordWebSocket: NSObject, ObservableObject {
     // MARK: - Message Subject
@@ -68,6 +73,20 @@ class DiscordWebSocket: NSObject, ObservableObject {
     
     func receiveMessage(channelId: String, message: Message) {
         messageSubject.send((channelId, message))
+    }
+    
+    // MARK: - Typing Start Subject
+    private let typingSubject = PassthroughSubject<(String, TypingStart), Never>()
+    
+    func typingStartPublisher(for channelId: String) -> AnyPublisher<TypingStart, Never> {
+        typingSubject
+            .filter { $0.0 == channelId }
+            .map { $0.1 }
+            .eraseToAnyPublisher()
+    }
+    
+    func receiveTypingStart(channelId: String, typingStart: TypingStart) {
+        typingSubject.send((channelId, typingStart))
     }
     
     // MARK: - Presence Update Subject
@@ -453,9 +472,18 @@ class DiscordWebSocket: NSObject, ObservableObject {
             if let seq = event.s {
                 self.lastSequence = seq
             }
-            // TODO:
-            DispatchQueue.main.async {
-                for user in ready.users {
+            /*
+             if let eventDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+             let _ = eventDict["op"] as? Int {
+             if let data = try? JSONSerialization.data(withJSONObject: eventDict, options: .prettyPrinted),
+             let jsonString = String(data: data, encoding: .utf8) {
+             print("Handling opcode 0\n\(jsonString)")
+             }
+             }
+             */
+            
+            for user in ready.users {
+                DispatchQueue.main.async {
                     self.receiveUser(user: user)
                     Log.network.info("Sent user \(user.id)")
                 }
@@ -469,12 +497,25 @@ class DiscordWebSocket: NSObject, ObservableObject {
             if let seq = event.s {
                 self.lastSequence = seq
             }
-            DispatchQueue.main.async {
-                for friend in readySupplemental.merged_presences.friends {
+            
+            for friend in readySupplemental.merged_presences.friends {
+                DispatchQueue.main.async {
                     let presenceUpdate = PresenceUpdate(user: PresenceUser(id: friend.user_id), status: friend.status)
                     self.receivePresenceUpdate(userId: friend.user_id, presenceUpdate: presenceUpdate)
                     Log.network.info("Updated presence for user \(friend.user_id): \(friend.status)")
                 }
+            }
+        }
+        // MARK: - TYPING_START EVENT
+        else if let event = try? decoder.decode(DiscordEvent<TypingStart>.self, from: data),
+                event.t == "TYPING_START", let typingStart = event.d {
+            Log.network.info("Event is a TYPING_START")
+            if let seq = event.s {
+                self.lastSequence = seq
+            }
+            DispatchQueue.main.async {
+                self.receiveTypingStart(channelId: typingStart.channel_id, typingStart: typingStart)
+                Log.network.info("Received typing_start for channel \(typingStart.channel_id) from user \(typingStart.user_id)")
             }
         }
         // Handle other opcodes
@@ -503,6 +544,12 @@ class DiscordWebSocket: NSObject, ObservableObject {
             case 0:
                 if let event = eventDict["t"] as? String {
                     Log.network.info("Handling opcode 0: \(event)")
+                    if event == "TYPING_START" {
+                        if let data = try? JSONSerialization.data(withJSONObject: eventDict, options: .prettyPrinted),
+                           let jsonString = String(data: data, encoding: .utf8) {
+                            print("Handling opcode 0\n\(jsonString)")
+                        }
+                    }
                 }
                 // Log.network.info("Handling opcode 0\n\(eventDict)")
                 /*

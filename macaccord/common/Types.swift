@@ -57,3 +57,10 @@ struct User: Hashable, Equatable, Codable, Identifiable {
         return global_name ?? username
     }
 }
+
+enum MessagePart: Identifiable {
+    case text(String)
+    case emote(name: String, id: String, animated: Bool)
+    
+    var id: UUID { UUID() }
+}

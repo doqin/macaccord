@@ -15,8 +15,15 @@ import AVKit
 struct ChannelDetailView: View {
     @StateObject private var viewModel = MessageViewModel()
     
+    let duration: TimeInterval = 30
+    
     @State private var isSending = false
+    @State private var isTyping = false
+    @State private var typingStartInfo: TypingStart?
+    @State private var timer: Timer? = nil
+    
     @State private var messageSubscription: AnyCancellable?
+    @State private var typingStartSubscription: AnyCancellable?
     
     @EnvironmentObject var discordWebSocket: DiscordWebSocket
     @EnvironmentObject var userData: UserData
@@ -45,7 +52,10 @@ struct ChannelDetailView: View {
                         .environmentObject(viewModel)
                         .environmentObject(userData)
                     // Sending indicator
-                    SendingIndicatorView(isSending: $isSending)
+                    VStack(spacing: 4) {
+                        SendingIndicatorView(isSending: $isSending)
+                        TypingView(isTyping: $isTyping, typingStartInfo: $typingStartInfo)
+                    }
                 }
                 
                 // Text field
@@ -58,8 +68,20 @@ struct ChannelDetailView: View {
             messageSubscription = discordWebSocket.messagesPublisher(for: channelId)
                 .receive(on: DispatchQueue.main)
                 .sink { [weak viewModel] message in
+                    isTyping = false
+                    timer = nil
                     Log.general.info("Appending message '\(message.content)' to message list...")
                     viewModel?.messages.prepend(message)
+                }
+            typingStartSubscription = discordWebSocket.typingStartPublisher(for: channelId)
+                .receive(on: DispatchQueue.main)
+                .sink { typingStart in
+                    typingStartInfo = typingStart
+                    isTyping = true
+                    timer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { _ in
+                        isTyping = false
+                        timer = nil
+                    }
                 }
         }
         .onDisappear {

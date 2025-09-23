@@ -36,14 +36,14 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             // Left sidebar
-            sidebarContent
+            HStack(spacing: 0) {
+                sidebarContent
+            }
         } detail: {
             detailContent
         }
-        .navigationSplitViewColumnWidth(min: 500, ideal: 500)
-        .inspector(isPresented: $showInspector) {
-            inspectorContent
-        }
+        .navigationSplitViewColumnWidth(min: 600, ideal: 600)
+        
         .task {
             setupWebSocket()
             await channelViewModel.fetchChannels()
@@ -62,8 +62,12 @@ struct ContentView: View {
     @ViewBuilder
     private var sidebarContent: some View {
         VStack {
-            sidebarPicker
             sidebarList
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        sidebarPicker
+                    }
+                }
         }
         .padding(4)
     }
@@ -74,8 +78,7 @@ struct ContentView: View {
             Image(systemName: "server.rack").tag(0)
             Image(systemName: "text.bubble.fill").tag(1)
         } label: {}
-        .pickerStyle(.segmented)
-        .padding(4)
+            .pickerStyle(.segmented)
     }
     
     @ViewBuilder
@@ -99,16 +102,18 @@ struct ContentView: View {
     @ViewBuilder
     private var detailContent: some View {
         if let channelSelection {
-            ChannelDetailView(channelId: channelSelection.id)
-                .id(channelSelection.id)
-                .environmentObject(discordWebSocket)
-                .environmentObject(userData)
-                .navigationTitle(channelTitle)
-                .toolbar {
-                    ToolbarItem(placement: .navigation) {
-                        avatarStack
+            HSplitView {
+                ChannelDetailView(channelId: channelSelection.id)
+                    .id(channelSelection.id)
+                    .environmentObject(discordWebSocket)
+                    .environmentObject(userData)
+                    .navigationTitle(channelTitle)
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            avatarStack
+                        }
                     }
-                }
+            }
         } else {
             Text("Select an item")
         }
@@ -129,13 +134,6 @@ struct ContentView: View {
     @ViewBuilder
     private var inspectorContent: some View {
         Text("Placeholder")
-            .toolbar {
-                Button(action: {
-                    showInspector.toggle()
-                }, label: {
-                    Label("Toggle Inspector", systemImage: "sidebar.right")
-                })
-            }
     }
     
     // MARK: - Computed Properties
