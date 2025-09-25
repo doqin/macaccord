@@ -83,12 +83,12 @@ struct MessageView: View {
     @ViewBuilder
     private var messageContent: some View {
         if !message.content.isEmpty {
-            HStack(spacing: 0) {
+            FlowLayout(spacing: 0) {
                 ForEach(content.indices, id: \.self) { i in
                     switch content[i] {
                     case .text(let str):
                         Text(str)
-                            .font(.subheadline)
+                            .font(.body)
                             .textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true) // Allow text to wrap properly
                     case .emote(_, let id, let animated):

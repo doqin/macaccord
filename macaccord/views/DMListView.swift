@@ -9,31 +9,7 @@ import SwiftUI
 
 
 
-struct ChannelView: View {
-    
-    let channel: Channel
-    let overlap: CGFloat = 16
-    let avatarSize: CGFloat = 24
-    
-    @EnvironmentObject var userData: UserData
-    
-    var body: some View {
-        HStack(spacing: 2) {
-            HStack(spacing: -overlap) {
-                ForEach(channel.recipients) { recipient in
-                    AvatarView(userId: recipient.id, size: avatarSize, isShowStatus: true)
-                        .environmentObject(userData)
-                }
-            }
-                        
-            Text(channel.recipients.map(\.displayName).joined(separator: ", "))
-                .lineLimit(1)
-                        
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
+
 
 struct DMListView: View {
     @EnvironmentObject private var viewModel: ChannelViewModel

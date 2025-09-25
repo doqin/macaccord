@@ -24,9 +24,10 @@ struct ContentView: View {
     @State private var presenceUpdateSubscription: AnyCancellable?
     @State private var userSubscription: AnyCancellable?
     
-    @StateObject private var discordWebSocket: DiscordWebSocket = DiscordWebSocket()
-    @StateObject private var userData = UserData()
-    @StateObject private var channelViewModel: ChannelViewModel = ChannelViewModel()
+    let myID: String
+    @EnvironmentObject private var userData: UserData
+    @EnvironmentObject private var channelViewModel: ChannelViewModel
+    @EnvironmentObject private var discordWebSocket: DiscordWebSocket
     
     
     let overlap: CGFloat = 16
@@ -45,15 +46,7 @@ struct ContentView: View {
         .navigationSplitViewColumnWidth(min: 600, ideal: 600)
         
         .task {
-            setupWebSocket()
-            await channelViewModel.fetchChannels()
-            for channel in channelViewModel.channels {
-                for recipient in channel.recipients {
-                    if userData.users[recipient.id] == nil {
-                        userData.users[recipient.id] = recipient
-                    }
-                }
-            }
+            setupSubscription()
         }
         .background(WindowStateObserver(isKeyWindow: $isKeyWindow, isMiniaturized: $isMiniaturized))
     }
@@ -68,6 +61,17 @@ struct ContentView: View {
                         sidebarPicker
                     }
                 }
+            HStack {
+                ChannelView(channel: Channel(id: "dummy_id", recipients: [userData.users[myID]!]))
+                    .environmentObject(userData)
+                Spacer()
+                Image(systemName: "gear")
+                    .font(.title)
+                    .foregroundStyle(.gray)
+            }
+            .padding(8)
+            .background(.gray.opacity(0.1))
+            .cornerRadius(16)
         }
         .padding(4)
     }
@@ -142,8 +146,7 @@ struct ContentView: View {
     }
     
     // MARK: - Helper Methods
-    private func setupWebSocket() {
-        discordWebSocket.connect()
+    private func setupSubscription() {
         userSubscription = discordWebSocket.usersPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [userData] user in
@@ -188,6 +191,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    //ContentView()
+        //.modelContainer(for: Item.self, inMemory: true)
 }
