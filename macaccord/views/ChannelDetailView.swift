@@ -21,12 +21,15 @@ struct ChannelDetailView: View {
     @State private var isTyping = false
     @State private var typingStartInfo: TypingStart?
     @State private var timer: Timer? = nil
+    @State private var isOpeningPicker = false
+    @State private var textFieldMessage = ""
     
     @State private var messageSubscription: AnyCancellable?
     @State private var typingStartSubscription: AnyCancellable?
     
     @EnvironmentObject var discordWebSocket: DiscordWebSocket
     @EnvironmentObject var userData: UserData
+    @EnvironmentObject var guildData: GuildData
     
     let channelId: String
     
@@ -48,7 +51,7 @@ struct ChannelDetailView: View {
             } else {
                 ZStack {
                     // Message list view
-                    MessageListView()
+                    MessageListView(channelId: channelId)
                         .environmentObject(viewModel)
                         .environmentObject(userData)
                     // Sending indicator
@@ -56,10 +59,17 @@ struct ChannelDetailView: View {
                         SendingIndicatorView(isSending: $isSending)
                         TypingView(isTyping: $isTyping, typingStartInfo: $typingStartInfo)
                     }
+                    if isOpeningPicker {
+                        HStack {
+                            Spacer()
+                            EmojiPickerView(textFieldMessage: $textFieldMessage)
+                                .padding(8)
+                                .environmentObject(guildData)
+                        }
+                    }
                 }
-                
                 // Text field
-               TextFieldView(isSending: $isSending, channelId: channelId)
+                TextFieldView(textFieldMessage: $textFieldMessage, isSending: $isSending, isOpeningPicker: $isOpeningPicker, channelId: channelId)
             }
         }
         .textFieldStyle(.roundedBorder)

@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-
-
-
-
 struct DMListView: View {
     @EnvironmentObject private var viewModel: ChannelViewModel
     @EnvironmentObject var discordWebSocket: DiscordWebSocket

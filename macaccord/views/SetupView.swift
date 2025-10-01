@@ -8,14 +8,11 @@
 import SwiftUI
 
 struct SetupView: View {
+    @Binding var setupMessage: String
     var body: some View {
         VStack {
             ProgressView()
-            Text("Setting up data")
+            Text(setupMessage)
         }
     }
-}
-
-#Preview {
-    SetupView()
 }

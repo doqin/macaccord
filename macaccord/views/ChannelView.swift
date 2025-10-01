@@ -26,6 +26,8 @@ struct ChannelView: View {
                         
             Text(channel.recipients.map(\.displayName).joined(separator: ", "))
                 .lineLimit(1)
+                .font(.title3)
+                .foregroundStyle(.gray)
                         
             Spacer()
         }

@@ -10,3 +10,7 @@ import SwiftUI
 class UserData : ObservableObject {
     @Published var users: [String: User] = [:]
 }
+
+class GuildData: ObservableObject {
+    @Published var guilds: [Guild] = []
+}

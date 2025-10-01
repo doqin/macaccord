@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Combine
 import Compression
 import Collections
@@ -25,6 +26,8 @@ struct PresenceUpdate: Codable {
 
 struct Ready: Codable {
     let users: [User]
+    let user: User // That's you
+    let guilds: [Guild]
 }
 
 struct ReadySupplemental: Codable {
@@ -55,6 +58,9 @@ struct TypingStart: Codable {
 
 // MARK: - Definitions
 class DiscordWebSocket: NSObject, ObservableObject {
+    
+    @Published var ready: Bool = false
+    
     // MARK: - Message Subject
     private let messageSubject = PassthroughSubject<(String, Message), Never>()
 
@@ -73,6 +79,26 @@ class DiscordWebSocket: NSObject, ObservableObject {
     
     func receiveMessage(channelId: String, message: Message) {
         messageSubject.send((channelId, message))
+    }
+    
+    // MARK: - Guild Subject
+    private let guildSubject = PassthroughSubject<(String, Guild), Never>()
+    
+    func guildPublisher(for guildId: String) -> AnyPublisher<Guild, Never> {
+        guildSubject
+            .filter { $0.0 == guildId }
+            .map { $0.1 }
+            .eraseToAnyPublisher()
+    }
+    
+    func guildPublisherFull() -> AnyPublisher<Guild, Never> {
+        guildSubject
+            .map(\.1)
+            .eraseToAnyPublisher()
+    }
+    
+    func receiveGuild(guildId: String, guild: Guild) {
+        guildSubject.send((guildId, guild))
     }
     
     // MARK: - Typing Start Subject
@@ -110,15 +136,23 @@ class DiscordWebSocket: NSObject, ObservableObject {
     }
     
     // MARK: - User Subject
-    private let userSubject = PassthroughSubject<User, Never>()
+    private let userSubject = PassthroughSubject<(String, User), Never>()
     
-    func usersPublisher() -> AnyPublisher<User, Never> {
+    func usersPublisher(for userId: String) -> AnyPublisher<User, Never> {
         userSubject
+            .filter { $0.0 == userId}
+            .map { $0.1 }
             .eraseToAnyPublisher()
     }
     
-    func receiveUser(user: User) {
-        userSubject.send(user)
+    func usersPublisherFull() -> AnyPublisher<User, Never> {
+        userSubject
+            .map(\.1)
+            .eraseToAnyPublisher()
+    }
+    
+    func receiveUser(userId: String, user: User) {
+        userSubject.send((userId, user))
     }
         
     // MARK: - Variables
@@ -481,11 +515,16 @@ class DiscordWebSocket: NSObject, ObservableObject {
              }
              }
              */
-            
-            for user in ready.users {
-                DispatchQueue.main.async {
-                    self.receiveUser(user: user)
+            DispatchQueue.main.async {
+                for user in ready.users {
+                    self.receiveUser(userId: user.id, user: user)
                     Log.network.info("Sent user \(user.id)")
+                }
+                self.receiveUser(userId: "me", user: ready.user)
+                Log.network.info("Send my profie")
+                for guild in ready.guilds {
+                    self.receiveGuild(guildId: guild.id, guild: guild)
+                    Log.network.info("Send guild \(guild.id)")
                 }
             }
         }
@@ -498,12 +537,14 @@ class DiscordWebSocket: NSObject, ObservableObject {
                 self.lastSequence = seq
             }
             
-            for friend in readySupplemental.merged_presences.friends {
-                DispatchQueue.main.async {
+            
+            DispatchQueue.main.async {
+                for friend in readySupplemental.merged_presences.friends {
                     let presenceUpdate = PresenceUpdate(user: PresenceUser(id: friend.user_id), status: friend.status)
                     self.receivePresenceUpdate(userId: friend.user_id, presenceUpdate: presenceUpdate)
                     Log.network.info("Updated presence for user \(friend.user_id): \(friend.status)")
                 }
+                self.ready = true
             }
         }
         // MARK: - TYPING_START EVENT

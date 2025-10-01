@@ -147,7 +147,8 @@ struct AttachmentGrid_Previews: PreviewProvider {
                                             Attachment(id: "6", filename: "amogus.png", url: "https://picsum.photos/id/1018/600/900", content_type: "image/png", width: nil, height: nil)
                                         ],
                                         timestamp: Date()
-                                       )
+                                       ),
+                            isJustText: false
                 ).environmentObject(UserData())
                 MessageView(message:
                                 Message(id: "2",
@@ -160,7 +161,8 @@ struct AttachmentGrid_Previews: PreviewProvider {
                                             Attachment(id: "6", filename: "amogus.png", url: "https://picsum.photos/id/1018/600/900", content_type: "image/png", width: nil, height: nil)
                                         ],
                                         timestamp: Date()
-                                       )
+                                       ),
+                            isJustText: false
                 ).environmentObject(UserData())
                 
                 /*

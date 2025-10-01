@@ -20,15 +20,13 @@ struct ContentView: View {
     @State private var selection = 1
     @State private var channelSelection: Channel?
     
-    @State private var messageSubscription: AnyCancellable?
-    @State private var presenceUpdateSubscription: AnyCancellable?
-    @State private var userSubscription: AnyCancellable?
-    
     let myID: String
     @EnvironmentObject private var userData: UserData
+    @EnvironmentObject private var guildData: GuildData
     @EnvironmentObject private var channelViewModel: ChannelViewModel
     @EnvironmentObject private var discordWebSocket: DiscordWebSocket
     
+    @State private var messageSubscription: AnyCancellable?
     
     let overlap: CGFloat = 16
     let avatarSize: CGFloat = 32
@@ -44,11 +42,23 @@ struct ContentView: View {
             detailContent
         }
         .navigationSplitViewColumnWidth(min: 600, ideal: 600)
-        
-        .task {
-            setupSubscription()
-        }
         .background(WindowStateObserver(isKeyWindow: $isKeyWindow, isMiniaturized: $isMiniaturized))
+        .task {
+            messageSubscription = discordWebSocket.messagesPublisherFull()
+                .receive(on: DispatchQueue.main)
+                .sink { [channelViewModel] message in
+                    for idx in channelViewModel.channels.indices {
+                        if channelViewModel.channels[idx].id == message.channel_id {
+                            Log.general.info("Updating last message for \(message.channel_id): \(message.id)")
+                            channelViewModel.channels[idx].last_message_timestamp = message.timestamp
+                            if channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow || message.author.id != myID {
+                                sendNotification(title: message.author.displayName, body: message.content)
+                            }
+                        }
+                    }
+                    
+                }
+        }
     }
     
     // MARK: - Sidebar
@@ -111,6 +121,7 @@ struct ContentView: View {
                     .id(channelSelection.id)
                     .environmentObject(discordWebSocket)
                     .environmentObject(userData)
+                    .environmentObject(guildData)
                     .navigationTitle(channelTitle)
                     .toolbar {
                         ToolbarItem(placement: .navigation) {
@@ -143,35 +154,6 @@ struct ContentView: View {
     // MARK: - Computed Properties
     private var channelTitle: String {
         channelSelection?.recipients.map { $0.global_name ?? $0.username }.joined(separator: ", ") ?? ""
-    }
-    
-    // MARK: - Helper Methods
-    private func setupSubscription() {
-        userSubscription = discordWebSocket.usersPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [userData] user in
-                userData.users[user.id] = user
-            }
-        presenceUpdateSubscription = discordWebSocket.presenceUpdatePublisherFull()
-            .receive(on: DispatchQueue.main)
-            .sink { [userData] presenceUpdate in
-                Log.general.info("Updating presence for \(presenceUpdate.user.id): \(presenceUpdate.status)")
-                userData.users[presenceUpdate.user.id]?.status = presenceUpdate.status
-            }
-        messageSubscription = discordWebSocket.messagesPublisherFull()
-            .receive(on: DispatchQueue.main)
-            .sink { [channelViewModel] message in
-                for idx in channelViewModel.channels.indices {
-                    if channelViewModel.channels[idx].id == message.channel_id {
-                        Log.general.info("Updating last message for \(message.channel_id): \(message.id)")
-                        channelViewModel.channels[idx].last_message_timestamp = message.timestamp
-                        if channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow {
-                            sendNotification(title: message.author.displayName, body: message.content)
-                        }
-                    }
-                }
-                
-            }
     }
 
     private func addItem() {

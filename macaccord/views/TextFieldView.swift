@@ -10,11 +10,12 @@ import Foundation
 
 
 struct TextFieldView: View {
-    @State private var message: String = ""
+    @Binding var textFieldMessage: String
     @State private var errorMessage = ""
     @State private var showErrorAlert = false
     
     @Binding var isSending: Bool
+    @Binding var isOpeningPicker: Bool
     
     var decoder: JSONDecoder = MessageDecoder.createDecoder()
     
@@ -34,25 +35,11 @@ struct TextFieldView: View {
             .buttonStyle(.plain)
             // The actual Text field
             HStack {
-                TextField("Message", text: $message)
+                TextField("Message", text: $textFieldMessage)
                     .textFieldStyle(PlainTextFieldStyle())
                     .padding()
                     .onSubmit {
-                        Task {
-                            do {
-                                isSending = true
-                                defer { isSending = false }
-                                let messageToSend = message
-                                message = ""
-                                Log.network.info("Sending message '\(messageToSend)' to channel '\(channelId)'...")
-                                let sentMessage = try await sendMessage(message: messageToSend)
-                                Log.network.info("Sent message '\(sentMessage.content)'!")
-                                // viewModel.messages.count > 0 ? viewModel.messages.prepend(sentMessage) : viewModel.messages.append(sentMessage)
-                            } catch {
-                                errorMessage = error.localizedDescription
-                                showErrorAlert = true
-                            }
-                        }
+                        sendMessageHelper()
                     }
                     .alert("Error", isPresented: $showErrorAlert, actions: {
                         Button("OK", role: .cancel) {}
@@ -60,57 +47,76 @@ struct TextFieldView: View {
                         Text(errorMessage)
                     })
                 // The Emote button
-                Button {
-                    // Doesn't do anything yet
-                } label: {
-                    Image(systemName: "face.smiling.inverse")
-                        .foregroundColor(.gray)
-                        .font(.title2)
-                }
+                emoteButtonView
                 .padding(8)
-                .buttonStyle(.plain)
             }
             .frame(height: 32)
             .background(
-                RoundedRectangle(cornerRadius: 999)
-                    .fill(Color.gray.opacity(0.1))
-                    .overlay(RoundedRectangle(cornerRadius: 999).stroke(style: StrokeStyle(lineWidth: 0.5)).fill(Color.gray))
+                backgroundView
             )
             // The send button
-            Button {
-                if !message.isEmpty {
-                    Task {
-                        do {
-                            isSending = true
-                            defer { isSending = false }
-                            let messageToSend = message
-                            message = ""
-                            Log.network.info("Sending message '\(messageToSend)' to channel '\(channelId)'...")
-                            let sentMessage = try await sendMessage(message: messageToSend)
-                            Log.network.info("Sent message '\(sentMessage.content)'!")
-                            // viewModel.messages.count > 0 ? viewModel.messages.prepend(sentMessage) : viewModel.messages.append(sentMessage)
-                        } catch {
-                            errorMessage = error.localizedDescription
-                            showErrorAlert = true
-                        }
-                    }
-                }
-            } label: {
-                if message.isEmpty {
-                    Image(systemName: "paperplane.circle")
-                        .foregroundColor(.gray)
-                        .font(.largeTitle)
-                } else {
-                    Image(systemName: "paperplane.circle.fill")
-                        .foregroundColor(.blue)
-                        .font(.largeTitle)
-                }
-            }
+            sendButtonView
             .padding(8)
-            .buttonStyle(.plain)
         }
         .padding(.bottom, 4)
         .padding(.horizontal, 4)
+    }
+    
+    @ViewBuilder
+    var backgroundView: some View {
+        RoundedRectangle(cornerRadius: 999)
+            .fill(Color.gray.opacity(0.1))
+            .overlay(RoundedRectangle(cornerRadius: 999).stroke(style: StrokeStyle(lineWidth: 0.5)).fill(Color.gray))
+    }
+    
+    @ViewBuilder
+    var emoteButtonView: some View {
+        Button {
+            isOpeningPicker.toggle()
+        } label: {
+            Image(systemName: "face.smiling.inverse")
+                .foregroundColor(.gray)
+                .font(.title2)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    @ViewBuilder
+    var sendButtonView: some View {
+        Button {
+            sendMessageHelper()
+        } label: {
+            if textFieldMessage.isEmpty {
+                Image(systemName: "paperplane.circle")
+                    .foregroundColor(.gray)
+                    .font(.largeTitle)
+            } else {
+                Image(systemName: "paperplane.circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.largeTitle)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+    
+    func sendMessageHelper() {
+        if !textFieldMessage.isEmpty {
+            Task {
+                do {
+                    isSending = true
+                    defer { isSending = false }
+                    let messageToSend = textFieldMessage
+                    textFieldMessage = ""
+                    Log.network.info("Sending message '\(messageToSend)' to channel '\(channelId)'...")
+                    let sentMessage = try await sendMessage(message: messageToSend)
+                    Log.network.info("Sent message '\(sentMessage.content)'!")
+                    // viewModel.messages.count > 0 ? viewModel.messages.prepend(sentMessage) : viewModel.messages.append(sentMessage)
+                } catch {
+                    errorMessage = error.localizedDescription
+                    showErrorAlert = true
+                }
+            }
+        }
     }
     
     func sendMessage(message: String) async throws -> Message {

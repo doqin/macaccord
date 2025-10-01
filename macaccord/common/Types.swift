@@ -58,6 +58,22 @@ struct User: Hashable, Equatable, Codable, Identifiable {
     }
 }
 
+struct Guild: Hashable, Codable, Identifiable {
+    var id: String
+    var name: String
+    var emojis: [Emoji]
+    // var stickers: [Sticker]
+    // var channels: [Channel]
+}
+
+struct Emoji: Hashable, Codable, Identifiable {
+    var id: String
+    var name: String
+    var animated: Bool
+    var available: Bool
+    // var require_colons: Bool (not sure what this is)
+}
+
 enum MessagePart: Identifiable {
     case text(String)
     case emote(name: String, id: String, animated: Bool)

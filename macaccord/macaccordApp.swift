@@ -7,16 +7,23 @@
 
 import SwiftUI
 import SwiftData
+import Combine
 
 @main
 struct macaccordApp: App {
-    
+    @State private var setupMessage: String = "Setting up Discord..."
     @State private var me: User?
     @State private var isLoading: Bool = true
     
     @StateObject private var discordWebSocket: DiscordWebSocket = DiscordWebSocket()
     @StateObject private var userData = UserData()
+    @StateObject private var guildData = GuildData()
     @StateObject private var channelViewModel: ChannelViewModel = ChannelViewModel()
+    
+    @State private var userSubscription: AnyCancellable?
+    @State private var meSubscription: AnyCancellable?
+    @State private var guildSubscription: AnyCancellable?
+    @State private var presenceUpdateSubscription: AnyCancellable?
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -39,12 +46,13 @@ struct macaccordApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if isLoggedIn && isLoading == true {
-                SetupView()
+            if isLoggedIn && (isLoading || !discordWebSocket.ready ) {
+                SetupView(setupMessage: $setupMessage)
                     .task {
-                        Log.network.info("Connecting discord websocket...")
-                        discordWebSocket.connect()
+                        Log.network.info("Setting up subscriptions...")
+                        setupSubscription()
                         Log.network.info("Fetching channels...")
+                        setupMessage = "Fetching channels..."
                         await channelViewModel.fetchChannels()
                         for channel in channelViewModel.channels {
                             for recipient in channel.recipients {
@@ -53,35 +61,49 @@ struct macaccordApp: App {
                                 }
                             }
                         }
-                        while(true) {
-                            do {
-                                Log.network.info("Fetching my profile...")
-                                me = try await fetchMe()
-                                break
-                            } catch (let e) {
-                                Log.network.error("\(e.localizedDescription)")
-                                Log.network.info("Retrying...")
-                            }
-                        }
-                        // This should not fail
-                        Log.network.info("Fetched my profile! \(me!.id)")
-                        userData.users[me!.id] = me
-                        Log.network.info("Setup complete!")
+                        Log.network.info("Connecting discord websocket...")
+                        setupMessage = "Connecting to discord websocket..."
+                        discordWebSocket.connect()
                         isLoading = false
                     }
-            } else if isLoggedIn && isLoading == false {
+            } else if isLoggedIn && !isLoading && discordWebSocket.ready {
                 ContentView(myID: me!.id)
                     .environmentObject(userData)
+                    .environmentObject(guildData)
                     .environmentObject(channelViewModel)
                     .environmentObject(discordWebSocket)
-            } else {
+            } else if !isLoggedIn {
                 LoginView()
             }
         }
         .modelContainer(sharedModelContainer)
-        
         Settings {
             SettingsView()
         }
+    }
+    
+    // MARK: - Helper Methods
+    private func setupSubscription() {
+        userSubscription = discordWebSocket.usersPublisherFull()
+            .receive(on: DispatchQueue.main)
+            .sink { [userData] user in
+                userData.users[user.id] = user
+            }
+        meSubscription = discordWebSocket.usersPublisher(for: "me")
+            .receive(on: DispatchQueue.main)
+            .sink { [meBinding = $me] user in
+                meBinding.wrappedValue = user
+            }
+        guildSubscription = discordWebSocket.guildPublisherFull()
+            .receive(on: DispatchQueue.main)
+            .sink { [guildData] guild in
+                guildData.guilds.append(guild)
+            }
+        presenceUpdateSubscription = discordWebSocket.presenceUpdatePublisherFull()
+            .receive(on: DispatchQueue.main)
+            .sink { [userData] presenceUpdate in
+                Log.general.info("Updating presence for \(presenceUpdate.user.id): \(presenceUpdate.status)")
+                userData.users[presenceUpdate.user.id]?.status = presenceUpdate.status
+            }
     }
 }

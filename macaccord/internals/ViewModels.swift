@@ -59,12 +59,23 @@ class MessageViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     let decoder: JSONDecoder = MessageDecoder.createDecoder()
     
-    func fetchMessages(channel: String) async {
-        isLoading = true
+    func fetchMessages(channel: String, isExtending: Bool = false) async {
+        if !isExtending {
+            isLoading = true
+        }
         errorMessage = nil
         defer { isLoading = false }
-        
-        guard let url = URL(string: "https://discord.com/api/v9/channels/\(channel)/messages?limit=50") else {
+        var urlString = "https://discord.com/api/v9/channels/\(channel)/messages?limit=50"
+        if isExtending {
+            let lastMessageId = messages.last?.id
+            if let lastMessageId = lastMessageId {
+                urlString += "&before=\(lastMessageId)"
+            } else {
+                errorMessage = "Failed to fetch messages"
+                return
+            }
+        }
+        guard let url = URL(string: urlString) else {
             errorMessage = "Invalid URL"
             return
         }
@@ -84,7 +95,7 @@ class MessageViewModel: ObservableObject {
             
             Log.general.info("\(data_string)")
             // Decode the json
-            messages = try decoder.decode(Deque<Message>.self, from: data)
+            messages.append(contentsOf: try decoder.decode(Deque<Message>.self, from: data))
         } catch {
             errorMessage = "Failed to fetch: \(error)"
         }
