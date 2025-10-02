@@ -7,19 +7,18 @@
 
 import SwiftUI
 
-struct SecurityScopedImage<Placeholder: View>: View {
+struct SecurityScopedImage<Placeholder: View, Label: View>: View {
     
     let url: URL
     
     @State private var nsImage: NSImage? = nil
     @ViewBuilder var placeholder: () -> Placeholder
+    @ViewBuilder var label: (NSImage) -> Label
     
     var body: some View {
         Group {
             if let nsImage = nsImage {
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .scaledToFit()
+                label(nsImage)
             } else {
                 placeholder()
             }

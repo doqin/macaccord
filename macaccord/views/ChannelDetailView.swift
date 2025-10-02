@@ -73,9 +73,12 @@ struct ChannelDetailView: View {
                     // Imported attachments preview (only when there are selected files)
                     if !fileURLs.isEmpty {
                         ImportedAttachmentsView(fileURLs: $fileURLs)
-                            .frame(height: 96)
-                            .padding(.horizontal, 4)
-                            .transition(.opacity)
+                            .transition(
+                                .asymmetric(
+                                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                                    removal: .opacity
+                                )
+                            )
                     }
                     // Text field
                     TextFieldView(textFieldMessage: $textFieldMessage, isSending: $isSending, isOpeningPicker: $isOpeningPicker, fileURLs: $fileURLs, channelId: channelId)
@@ -84,6 +87,7 @@ struct ChannelDetailView: View {
                     backgroundView
                 )
                 .padding(4)
+                .animation(.bouncy(duration: 0.3), value: fileURLs.isEmpty)
             }
         }
         .textFieldStyle(.roundedBorder)
@@ -118,8 +122,8 @@ struct ChannelDetailView: View {
     
     @ViewBuilder
     var backgroundView: some View {
-        RoundedRectangle(cornerRadius: 8)
+        RoundedRectangle(cornerRadius: 16)
             .fill(Color.gray.opacity(0.1))
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(style: StrokeStyle(lineWidth: 0.5)).fill(Color.gray))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(style: StrokeStyle(lineWidth: 0.5)).fill(Color.gray))
     }
 }

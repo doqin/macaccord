@@ -49,6 +49,7 @@ struct DMListView: View {
                                 .foregroundColor(.gray)
                                 .padding(4)
                             Text("Friends")
+                                .foregroundStyle(.gray)
                             Spacer()
                         }
                     }

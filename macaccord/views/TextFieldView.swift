@@ -8,7 +8,6 @@
 import SwiftUI
 import Foundation
 
-
 struct TextFieldView: View {
     @Binding var textFieldMessage: String
     @State private var errorMessage = ""
@@ -26,27 +25,9 @@ struct TextFieldView: View {
     var body: some View {
         HStack(spacing: 0) {
             // The attachment button
-            Button {
-                isImporterPresented = true
-            } label: {
-                Image(systemName: "plus")
-                    .foregroundColor(.gray)
-                    .font(.largeTitle)
-            }
-            .fileImporter(
-                isPresented: $isImporterPresented,
-                allowedContentTypes: [.item],
-                allowsMultipleSelection: true
-            ) { result in
-                switch result {
-                case .success(let urls):
-                    fileURLs = urls
-                case .failure(let error):
-                    Log.general.error("Error importing: \(error)")
-                }
-            }
-            .padding(8)
-            .buttonStyle(.plain)
+            attachmentButtonView
+                .padding(8)
+            
             // The actual Text field
             TextField("Message", text: $textFieldMessage)
                 .textFieldStyle(PlainTextFieldStyle())
@@ -67,18 +48,64 @@ struct TextFieldView: View {
                 .padding(8)
         }
         .padding(.horizontal, 8)
+        .fileImporter(
+            isPresented: $isImporterPresented,
+            allowedContentTypes: [.item],
+            allowsMultipleSelection: true
+        ) { result in
+            switch result {
+            case .success(let urls):
+                fileURLs = urls
+            case .failure(let error):
+                Log.general.error("Error importing: \(error)")
+            }
+        }
     }
     
-
+    var buttonHighlightView: some View {
+        RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+    }
+    
+    var buttonPlainView: some View {
+        RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+    }
+    
+    @ViewBuilder
+    var attachmentButtonView: some View {
+        CustomButton(
+            action: { isImporterPresented = true },
+            label: {
+                Image(systemName: "plus")
+                    .foregroundColor(.gray)
+                    .font(.largeTitle)
+                    .padding(8)
+            },
+            background: { isHovered in
+                if isHovered {
+                    AnyView(buttonHighlightView)
+                } else {
+                    AnyView(buttonPlainView)
+                }
+            }
+        )
+        .buttonStyle(.plain)
+    }
     
     @ViewBuilder
     var emoteButtonView: some View {
-        Button {
+        CustomButton {
             isOpeningPicker.toggle()
         } label: {
             Image(systemName: "face.smiling")
                 .foregroundColor(.gray)
                 .font(.title)
+                .padding(8)
+        } background: { isHovered in
+            if isHovered {
+                AnyView(buttonHighlightView)
+            } else {
+                AnyView(buttonPlainView)
+            }
         }
         .buttonStyle(.plain)
     }

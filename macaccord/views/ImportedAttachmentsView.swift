@@ -18,27 +18,65 @@ struct ImportedAttachmentsView: View {
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(fileURLs, id: \.path) { fileURL in
-                        Group {
-                            if isImage(fileURL) {
-                                SecurityScopedImage(url: fileURL, placeholder: {
-                                    placeholder(fileURL: fileURL)
-                                })
-                            } else {
-                                // Show thumbnail or fallback
-                                FileThumbnailView(fileURL: fileURL)
+                        ZStack {
+                            VStack {
+                                if isImage(fileURL) {
+                                    SecurityScopedImage(url: fileURL, placeholder: {
+                                        placeholder(fileURL: fileURL)
+                                            .padding(4)
+                                    }, label: { nsImage in
+                                        Image(nsImage: nsImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .background(.gray.opacity(0.1))
+                                            .cornerRadius(8)
+                                    })
+                                } else {
+                                    // Show thumbnail or fallback
+                                    FileThumbnailView(fileURL: fileURL)
+                                }
+                                Text(fileURL.lastPathComponent)
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
                             }
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Button {
+                                        fileURLs.remove(at: fileURLs.firstIndex(of: fileURL)!)
+                                    } label: {
+                                        Image(systemName: "trash.fill")
+                                            .foregroundStyle(.red)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .padding(8)
+                                    .background(
+                                        fileBackgroundView
+                                    )
+                                }
+                                Spacer()
+                            }
+                            
                         }
-                        .padding()
+                        .padding(8)
+                        .frame(width: 200, height: 200)
                         .background(
                             fileBackgroundView
+                        )
+                        .transition(
+                            .asymmetric(
+                                insertion: .move(edge: .bottom).combined(with: .opacity),
+                                removal: .opacity
+                            )
                         )
                     }
                 }
                 .padding(8)
+                .animation(.bouncy(duration: 0.3), value: fileURLs.count)
             }
         }
         .padding(8)
-        .frame(height: 156)
     }
     
     @ViewBuilder
@@ -60,17 +98,8 @@ struct ImportedAttachmentsView: View {
     }
     
     private func placeholder(fileURL: URL) -> some View {
-        VStack {
-            Image(systemName: "doc.fill")
-                .font(.largeTitle)
-            HStack {
-                Text(fileURL.lastPathComponent)
-                    .font(.caption)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-            }
-        }
-        .frame(width: 64)
+        Image(systemName: "doc.fill")
+            .font(.largeTitle)
     }
 }
 
@@ -127,7 +156,7 @@ struct FileThumbnailView: View {
     ImportedAttachmentsView(
         fileURLs: .constant(
             [
-                URL(string: "file:///Users/doqin/Downloads/shiba.jpg")!,
+                URL(string: "file:///Users/doqin/Downloads/dogdog.jpeg")!,
                 URL(string: "file:///Users/doqin/Downloads/tan-nguyen--2mmVMKjGXo-unsplash.jpg")!
             ]
         )
