@@ -12,6 +12,7 @@ struct SetupView: View {
     var body: some View {
         VStack {
             ProgressView()
+                .padding()
             Text(setupMessage)
         }
     }

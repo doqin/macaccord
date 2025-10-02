@@ -51,7 +51,7 @@ struct ContentView: View {
                         if channelViewModel.channels[idx].id == message.channel_id {
                             Log.general.info("Updating last message for \(message.channel_id): \(message.id)")
                             channelViewModel.channels[idx].last_message_timestamp = message.timestamp
-                            if channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow || message.author.id != myID {
+                            if (channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow) && message.author.id != myID {
                                 sendNotification(title: message.author.displayName, body: message.content)
                             }
                         }

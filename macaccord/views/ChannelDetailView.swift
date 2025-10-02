@@ -23,6 +23,7 @@ struct ChannelDetailView: View {
     @State private var timer: Timer? = nil
     @State private var isOpeningPicker = false
     @State private var textFieldMessage = ""
+    @State private var fileURLs: [URL] = []
     
     @State private var messageSubscription: AnyCancellable?
     @State private var typingStartSubscription: AnyCancellable?
@@ -68,8 +69,21 @@ struct ChannelDetailView: View {
                         }
                     }
                 }
-                // Text field
-                TextFieldView(textFieldMessage: $textFieldMessage, isSending: $isSending, isOpeningPicker: $isOpeningPicker, channelId: channelId)
+                VStack {
+                    // Imported attachments preview (only when there are selected files)
+                    if !fileURLs.isEmpty {
+                        ImportedAttachmentsView(fileURLs: $fileURLs)
+                            .frame(height: 96)
+                            .padding(.horizontal, 4)
+                            .transition(.opacity)
+                    }
+                    // Text field
+                    TextFieldView(textFieldMessage: $textFieldMessage, isSending: $isSending, isOpeningPicker: $isOpeningPicker, fileURLs: $fileURLs, channelId: channelId)
+                }
+                .background(
+                    backgroundView
+                )
+                .padding(4)
             }
         }
         .textFieldStyle(.roundedBorder)
@@ -100,5 +114,12 @@ struct ChannelDetailView: View {
         .task {
             await viewModel.fetchMessages(channel: channelId)
         }
+    }
+    
+    @ViewBuilder
+    var backgroundView: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(Color.gray.opacity(0.1))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(style: StrokeStyle(lineWidth: 0.5)).fill(Color.gray))
     }
 }

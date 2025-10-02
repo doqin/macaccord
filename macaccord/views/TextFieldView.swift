@@ -13,9 +13,11 @@ struct TextFieldView: View {
     @Binding var textFieldMessage: String
     @State private var errorMessage = ""
     @State private var showErrorAlert = false
+    @State var isImporterPresented: Bool = false
     
     @Binding var isSending: Bool
     @Binding var isOpeningPicker: Bool
+    @Binding var fileURLs: [URL]
     
     var decoder: JSONDecoder = MessageDecoder.createDecoder()
     
@@ -25,58 +27,58 @@ struct TextFieldView: View {
         HStack(spacing: 0) {
             // The attachment button
             Button {
-                // Doesn't do anything yet
+                isImporterPresented = true
             } label: {
                 Image(systemName: "plus")
                     .foregroundColor(.gray)
                     .font(.largeTitle)
             }
+            .fileImporter(
+                isPresented: $isImporterPresented,
+                allowedContentTypes: [.item],
+                allowsMultipleSelection: true
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    fileURLs = urls
+                case .failure(let error):
+                    Log.general.error("Error importing: \(error)")
+                }
+            }
             .padding(8)
             .buttonStyle(.plain)
             // The actual Text field
-            HStack {
-                TextField("Message", text: $textFieldMessage)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .padding()
-                    .onSubmit {
-                        sendMessageHelper()
-                    }
-                    .alert("Error", isPresented: $showErrorAlert, actions: {
-                        Button("OK", role: .cancel) {}
-                    }, message: {
-                        Text(errorMessage)
-                    })
-                // The Emote button
-                emoteButtonView
+            TextField("Message", text: $textFieldMessage)
+                .textFieldStyle(PlainTextFieldStyle())
+                .padding()
+                .onSubmit {
+                    sendMessageHelper()
+                }
+                .alert("Error", isPresented: $showErrorAlert, actions: {
+                    Button("OK", role: .cancel) {}
+                }, message: {
+                    Text(errorMessage)
+                })
+            // The Emote button
+            emoteButtonView
                 .padding(8)
-            }
-            .frame(height: 32)
-            .background(
-                backgroundView
-            )
             // The send button
             sendButtonView
-            .padding(8)
+                .padding(8)
         }
-        .padding(.bottom, 4)
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 8)
     }
     
-    @ViewBuilder
-    var backgroundView: some View {
-        RoundedRectangle(cornerRadius: 999)
-            .fill(Color.gray.opacity(0.1))
-            .overlay(RoundedRectangle(cornerRadius: 999).stroke(style: StrokeStyle(lineWidth: 0.5)).fill(Color.gray))
-    }
+
     
     @ViewBuilder
     var emoteButtonView: some View {
         Button {
             isOpeningPicker.toggle()
         } label: {
-            Image(systemName: "face.smiling.inverse")
+            Image(systemName: "face.smiling")
                 .foregroundColor(.gray)
-                .font(.title2)
+                .font(.title)
         }
         .buttonStyle(.plain)
     }
@@ -100,7 +102,7 @@ struct TextFieldView: View {
     }
     
     func sendMessageHelper() {
-        if !textFieldMessage.isEmpty {
+        if !textFieldMessage.isEmpty || !fileURLs.isEmpty {
             Task {
                 do {
                     isSending = true
@@ -108,8 +110,9 @@ struct TextFieldView: View {
                     let messageToSend = textFieldMessage
                     textFieldMessage = ""
                     Log.network.info("Sending message '\(messageToSend)' to channel '\(channelId)'...")
-                    let sentMessage = try await sendMessage(message: messageToSend)
-                    Log.network.info("Sent message '\(sentMessage.content)'!")
+                    try await sendMessage(message: messageToSend, fileURLs: fileURLs)
+                    Log.network.info("Sent message '\(messageToSend)'!")
+                    fileURLs = []
                     // viewModel.messages.count > 0 ? viewModel.messages.prepend(sentMessage) : viewModel.messages.append(sentMessage)
                 } catch {
                     errorMessage = error.localizedDescription
@@ -119,37 +122,65 @@ struct TextFieldView: View {
         }
     }
     
-    func sendMessage(message: String) async throws -> Message {
+    func sendMessage(message: String, fileURLs: [URL]) async throws {
         guard let url = URL(
             string: "https://discord.com/api/v9/channels/\(channelId)/messages"
         ) else {
             throw URLError(.badURL)
         }
         
-        let parameters: [String: Any] = [
-            "content": message,
-            "flags": 0,
-            "mobile_network_type": "unknown",
-            "nonce": generateNonce(),
-            "tts": false
+        let payload: [String: Any] = [
+            "content": message
         ]
-        let jsonBody = try? JSONSerialization.data(withJSONObject: parameters)
+        let payloadData = try JSONSerialization.data(withJSONObject: payload)
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        var body = Data()
+        
+        // Add payload_json
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"payload_json\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
+        body.append(payloadData)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // Add each file
+        for (index, fileURL) in fileURLs.prefix(10).enumerated() { // Discord max 10
+            // Start security access
+            do {
+                if fileURL.startAccessingSecurityScopedResource() {
+                    defer { fileURL.stopAccessingSecurityScopedResource() }
+                            
+                    let fileData = try Data(contentsOf: fileURL)
+                    let fileName = fileURL.lastPathComponent
+                    
+                    body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                    body.append("Content-Disposition: form-data; name=\"files[\(index)]\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+                    body.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
+                    body.append(fileData)
+                    body.append("\r\n".data(using: .utf8)!)
+                }
+            } catch (let error){
+                Log.general.error("Error importing file: \(error.localizedDescription)")
+                throw error
+            }
+        }
+        
+        // End
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(KeychainHelper.standard.read(service: "auth", account: "token"), forHTTPHeaderField: "Authorization")
-        request.httpBody = jsonBody
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
         
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (_, response) = try await URLSession.shared.data(for: request)
             if let httpResponse = response as? HTTPURLResponse,
                httpResponse.statusCode != 200 {
                 throw HTTPError.statusCode(httpResponse.statusCode)
             }
-            
-            let message = try decoder.decode(Message.self, from: data)
-            return message
         } catch {
             throw error
         }
