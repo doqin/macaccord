@@ -20,7 +20,7 @@ struct MessageView: View {
     @State private var isOnUsername = false
     @State private var isOnProfilePicture = false
     
-    @EnvironmentObject var userData: UserData
+    @EnvironmentObject var discordWebSocket: DiscordWebSocket
     
     init(message: Message, isJustText: Bool) {
         self.message = message
@@ -36,7 +36,7 @@ struct MessageView: View {
             // Profile picture
             if !isJustText {
                 AvatarView(userId: message.author.id, size: avatarSize)
-                    .environmentObject(userData)
+                    .environmentObject(discordWebSocket)
                     .overlay(
                         Circle()
                             .stroke(
@@ -68,6 +68,7 @@ struct MessageView: View {
                         Text(MessageDecoder.formatTimestamp(message.timestamp))
                             .font(.caption2)
                             .textSelection(.enabled)
+                            .foregroundStyle(.gray)
                     }
                 }
                 // The message content
@@ -102,7 +103,7 @@ struct MessageView: View {
                             .textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true) // Allow text to wrap properly
                     case .emote(_, let id, let animated):
-                        EmojiView(emoji: Emoji(id: id, name: "unavailable", animated: animated, available: true), emojiSize: emojiSize) // TODO: Maybe get the emoji name?
+                        EmojiView(emoji: Emoji(id: id, name: "unavailable", animated: animated, available: true), emojiSize: emojiSize, isPersistent: true) // TODO: Maybe get the emoji name?
                     }
                 }
             }

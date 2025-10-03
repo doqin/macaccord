@@ -149,7 +149,7 @@ struct AttachmentGrid_Previews: PreviewProvider {
                                         timestamp: Date()
                                        ),
                             isJustText: false
-                ).environmentObject(UserData())
+                ).environmentObject(DiscordWebSocket())
                 MessageView(message:
                                 Message(id: "2",
                                         author: User(id: "2", username: "balls toucher"),
@@ -163,7 +163,7 @@ struct AttachmentGrid_Previews: PreviewProvider {
                                         timestamp: Date()
                                        ),
                             isJustText: false
-                ).environmentObject(UserData())
+                ).environmentObject(DiscordWebSocket())
                 
                 /*
                  ImageAttachmentGridView(attachments: [

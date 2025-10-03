@@ -26,13 +26,6 @@ struct Message: Codable, Identifiable {
     let timestamp: Date
 }
 
-struct Channel: Hashable, Codable, Identifiable {
-    var id: String
-    var last_message_id: String?
-    var last_message_timestamp: Date?
-    var recipients: [User]
-}
-
 struct User: Hashable, Equatable, Codable, Identifiable {
     var id: String
     var username: String
@@ -61,9 +54,28 @@ struct User: Hashable, Equatable, Codable, Identifiable {
 struct Guild: Hashable, Codable, Identifiable {
     var id: String
     var name: String
+    var icon: String?
+    var channels: [Channel]
     var emojis: [Emoji]
     // var stickers: [Sticker]
-    // var channels: [Channel]
+    
+    var iconURL: URL? {
+        guard let icon = icon else { return nil }
+        
+        let fileName = "\(icon).png?size=80&quality=lossless"
+        return URL(string: "https://cdn.discordapp.com/icons/\(id)/\(fileName)")
+    }
+}
+
+struct Channel: Hashable, Codable, Identifiable {
+    var id: String
+    var position: Int?
+    var type: Int
+    var name: String?
+    var parent_id: String?
+    var last_message_id: String?
+    var last_message_timestamp: Date?
+    var recipients: [User]?
 }
 
 struct Emoji: Hashable, Codable, Identifiable {
@@ -79,4 +91,20 @@ enum MessagePart: Identifiable {
     case emote(name: String, id: String, animated: Bool)
     
     var id: UUID { UUID() }
+}
+
+enum ChannelType: Int {
+    case GUILD_TEXT = 0
+    case DM = 1
+    case GUILD_VOICE = 2
+    case GROUP_DM = 3
+    case GUILD_CATEGORY = 4
+    case GUILD_ANNOUNCEMENT = 5
+    case ANNOUNCEMENT_THREAD = 10
+    case PUBLIC_THREAD = 11
+    case PRIVATE_THREAD = 12
+    case GUILD_STAGE_VOICE = 13
+    case GUILD_DIRECTORY = 14
+    case GUILD_FORUM = 15
+    case GUILD_MEDIA = 16 // Still in development
 }

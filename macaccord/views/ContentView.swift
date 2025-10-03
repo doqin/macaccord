@@ -17,12 +17,9 @@ struct ContentView: View {
     @State private var isMiniaturized = false
     
     @State private var showInspector = false
-    @State private var selection = 1
     @State private var channelSelection: Channel?
+    @State private var guildSelection: Guild?
     
-    let myID: String
-    @EnvironmentObject private var userData: UserData
-    @EnvironmentObject private var guildData: GuildData
     @EnvironmentObject private var channelViewModel: ChannelViewModel
     @EnvironmentObject private var discordWebSocket: DiscordWebSocket
     
@@ -51,7 +48,7 @@ struct ContentView: View {
                         if channelViewModel.channels[idx].id == message.channel_id {
                             Log.general.info("Updating last message for \(message.channel_id): \(message.id)")
                             channelViewModel.channels[idx].last_message_timestamp = message.timestamp
-                            if (channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow) && message.author.id != myID {
+                            if (channelSelection?.id != message.channel_id || isMiniaturized || !isKeyWindow) && message.author.id != discordWebSocket.user!.id {
                                 sendNotification(title: message.author.displayName, body: message.content)
                             }
                         }
@@ -65,15 +62,13 @@ struct ContentView: View {
     @ViewBuilder
     private var sidebarContent: some View {
         VStack {
-            sidebarList
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        sidebarPicker
-                    }
-                }
+            SidebarView(guildSelection: $guildSelection, channelSelection: $channelSelection)
+                .environmentObject(discordWebSocket)
+                .environmentObject(channelViewModel)
+            // Profile view
             HStack {
-                ChannelView(channel: Channel(id: "dummy_id", recipients: [userData.users[myID]!]))
-                    .environmentObject(userData)
+                ChannelView(channel: Channel(id: "dummy_id", type: ChannelType.DM.rawValue, recipients: [discordWebSocket.user!]))
+                    .environmentObject(discordWebSocket)
                 Spacer()
                 Image(systemName: "gear")
                     .font(.title)
@@ -82,35 +77,11 @@ struct ContentView: View {
             .padding(8)
             .background(.gray.opacity(0.1))
             .cornerRadius(16)
-        }
-        .padding(4)
-    }
-    
-    @ViewBuilder
-    private var sidebarPicker: some View {
-        Picker(selection: $selection) {
-            Image(systemName: "server.rack").tag(0)
-            Image(systemName: "text.bubble.fill").tag(1)
-        } label: {}
-            .pickerStyle(.segmented)
-    }
-    
-    @ViewBuilder
-    private var sidebarList: some View {
-        switch selection {
-        case 0:
-            List {
-                
-            }
-        case 1:
-            DMListView(selection: $channelSelection)
-                .environmentObject(discordWebSocket)
-                .environmentObject(channelViewModel)
-                .environmentObject(userData)
-        default:
-            Text("How'd you get here?")
+            .padding(4)
         }
     }
+    
+        
     
     // MARK: - Detail Content
     @ViewBuilder
@@ -120,12 +91,12 @@ struct ContentView: View {
                 ChannelDetailView(channelId: channelSelection.id)
                     .id(channelSelection.id)
                     .environmentObject(discordWebSocket)
-                    .environmentObject(userData)
-                    .environmentObject(guildData)
                     .navigationTitle(channelTitle)
                     .toolbar {
-                        ToolbarItem(placement: .navigation) {
-                            avatarStack
+                        if channelSelection.type == ChannelType.DM.rawValue {
+                            ToolbarItem(placement: .navigation) {
+                                avatarStack
+                            }
                         }
                     }
             }
@@ -141,7 +112,6 @@ struct ContentView: View {
             ForEach(channelSelection?.recipients ?? []) { recipient in
                 AvatarView(userId: recipient.id, size: avatarSize, isShowStatus: true)
                     .environmentObject(discordWebSocket)
-                    .environmentObject(userData)
             }
         }
     }
@@ -153,7 +123,7 @@ struct ContentView: View {
     
     // MARK: - Computed Properties
     private var channelTitle: String {
-        channelSelection?.recipients.map { $0.global_name ?? $0.username }.joined(separator: ", ") ?? ""
+        channelSelection?.recipients?.map { $0.global_name ?? $0.username }.joined(separator: ", ") ?? channelSelection?.name ?? "Unknown Channel"
     }
 
     private func addItem() {

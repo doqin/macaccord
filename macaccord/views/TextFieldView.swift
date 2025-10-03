@@ -63,11 +63,11 @@ struct TextFieldView: View {
     }
     
     var buttonHighlightView: some View {
-        RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1))
+        RoundedRectangle(cornerRadius: 16).fill(Color.gray.opacity(0.1))
     }
     
     var buttonPlainView: some View {
-        RoundedRectangle(cornerRadius: 8).fill(Color.clear)
+        RoundedRectangle(cornerRadius: 16).fill(Color.clear)
     }
     
     @ViewBuilder

@@ -14,7 +14,7 @@ import SwiftUI
 // MARK: - Message List View
 struct MessageListView: View {
     @EnvironmentObject var viewModel: MessageViewModel
-    @EnvironmentObject var userData: UserData
+    @EnvironmentObject var discordWebSocket: DiscordWebSocket
     
     let channelId: String
     let timeFrame = 10
@@ -34,7 +34,7 @@ struct MessageListView: View {
                                 .id(viewModel.messages[idx].id)
                                 .rotationEffect(.degrees(180))
                                 .scaleEffect(x: -1.0, y: 1.0)
-                                .environmentObject(userData)
+                                .environmentObject(discordWebSocket)
                                 .transition(
                                     .asymmetric(
                                         insertion: .move(edge: .top).combined(with: .opacity),

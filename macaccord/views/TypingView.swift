@@ -30,7 +30,7 @@ struct ThreeDotLoadingView: View {
 
 struct TypingView: View {
     
-    @EnvironmentObject var userData: UserData
+    @EnvironmentObject var discordWebSocket: DiscordWebSocket
     
     @Binding var isTyping: Bool
     @Binding var typingStartInfo: TypingStart?
@@ -40,20 +40,22 @@ struct TypingView: View {
             if isTyping {
                 HStack(spacing: 4) {
                     CachedAsyncImage(
-                        url: userData.users[typingStartInfo?.user_id ?? "0"]?.avatarURL,
+                        url: discordWebSocket.users[typingStartInfo?.user_id ?? "0"]?.avatarURL,
                         placeholder:
+                            AnyView(
                             Image(systemName: "person.circle.fill")
-                            .resizable()
+                            .resizable())
                         ,
                         errorImage:
+                            AnyView(
                             Image(systemName: "questionmark.circle")
-                            .resizable()
+                            .resizable())
                     )
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 16, height: 16)
                     .clipShape(Circle())
                     .padding(.horizontal, 16/6)
-                    Text(userData.users[typingStartInfo?.user_id ?? "0"]?.displayName ?? "unknown person")
+                    Text(discordWebSocket.users[typingStartInfo?.user_id ?? "0"]?.displayName ?? "unknown person")
                         .font(.callout)
                     Text("is typing")
                         .font(.callout)
@@ -75,10 +77,10 @@ struct TypingView: View {
 
 #Preview {
     /*
-    let userData = UserData()
-    userData.users["672642067050135562"] = User(id: "672642067050135562", username: "gayce", avatar: "b04f7a78903118afb68d17f079599a5f", status: "idle")
+    let discordWebSocket = discordWebSocket()
+    discordWebSocket.users["672642067050135562"] = User(id: "672642067050135562", username: "gayce", avatar: "b04f7a78903118afb68d17f079599a5f", status: "idle")
     return TypingView(userId: "672642067050135562", channelId: "1406300552857649253")
-        .environmentObject(userData)
+        .environmentObject(discordWebSocket)
         .frame(width: 256, height: 256)
      */
 }

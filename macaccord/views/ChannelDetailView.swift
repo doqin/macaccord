@@ -29,8 +29,6 @@ struct ChannelDetailView: View {
     @State private var typingStartSubscription: AnyCancellable?
     
     @EnvironmentObject var discordWebSocket: DiscordWebSocket
-    @EnvironmentObject var userData: UserData
-    @EnvironmentObject var guildData: GuildData
     
     let channelId: String
     
@@ -54,18 +52,21 @@ struct ChannelDetailView: View {
                     // Message list view
                     MessageListView(channelId: channelId)
                         .environmentObject(viewModel)
-                        .environmentObject(userData)
+                        .environmentObject(discordWebSocket)
                     // Sending indicator
                     VStack(spacing: 4) {
                         SendingIndicatorView(isSending: $isSending)
                         TypingView(isTyping: $isTyping, typingStartInfo: $typingStartInfo)
                     }
                     if isOpeningPicker {
-                        HStack {
+                        VStack {
                             Spacer()
-                            EmojiPickerView(textFieldMessage: $textFieldMessage)
-                                .padding(8)
-                                .environmentObject(guildData)
+                            HStack {
+                                Spacer()
+                                EmojiPickerView(textFieldMessage: $textFieldMessage)
+                                    .padding(8)
+                                    .environmentObject(discordWebSocket)
+                            }
                         }
                     }
                 }

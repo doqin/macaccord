@@ -18,7 +18,6 @@ struct CollapsibleView<HeaderView: View, ContentView: View>: View {
         } label: {
             header()
         }
-        .padding(4)
     }
 }
 

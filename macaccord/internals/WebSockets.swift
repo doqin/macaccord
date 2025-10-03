@@ -28,6 +28,18 @@ struct Ready: Codable {
     let users: [User]
     let user: User // That's you
     let guilds: [Guild]
+    let user_settings: UserSettings
+}
+
+struct UserSettings: Codable {
+    let guild_folders: [GuildFolder]
+}
+
+struct GuildFolder: Codable, Hashable {
+    let id: Int?
+    let name: String?
+    // let color: Int?
+    let guild_ids: [String]
 }
 
 struct ReadySupplemental: Codable {
@@ -61,6 +73,11 @@ class DiscordWebSocket: NSObject, ObservableObject {
     
     @Published var ready: Bool = false
     
+    @Published var users: [String: User] = [:]
+    @Published var user: User?
+    @Published var user_settings: UserSettings? = nil
+    @Published var guilds: [String: Guild] = [:]
+    
     // MARK: - Message Subject
     private let messageSubject = PassthroughSubject<(String, Message), Never>()
 
@@ -81,26 +98,6 @@ class DiscordWebSocket: NSObject, ObservableObject {
         messageSubject.send((channelId, message))
     }
     
-    // MARK: - Guild Subject
-    private let guildSubject = PassthroughSubject<(String, Guild), Never>()
-    
-    func guildPublisher(for guildId: String) -> AnyPublisher<Guild, Never> {
-        guildSubject
-            .filter { $0.0 == guildId }
-            .map { $0.1 }
-            .eraseToAnyPublisher()
-    }
-    
-    func guildPublisherFull() -> AnyPublisher<Guild, Never> {
-        guildSubject
-            .map(\.1)
-            .eraseToAnyPublisher()
-    }
-    
-    func receiveGuild(guildId: String, guild: Guild) {
-        guildSubject.send((guildId, guild))
-    }
-    
     // MARK: - Typing Start Subject
     private let typingSubject = PassthroughSubject<(String, TypingStart), Never>()
     
@@ -113,46 +110,6 @@ class DiscordWebSocket: NSObject, ObservableObject {
     
     func receiveTypingStart(channelId: String, typingStart: TypingStart) {
         typingSubject.send((channelId, typingStart))
-    }
-    
-    // MARK: - Presence Update Subject
-    private let presenceUpdateSubject = PassthroughSubject<(String, PresenceUpdate), Never>()
-    
-    func presenceUpdatePublisher(for userId: String) -> AnyPublisher<PresenceUpdate, Never> {
-        presenceUpdateSubject
-            .filter { $0.0 == userId }
-            .map { $0.1 }
-            .eraseToAnyPublisher()
-    }
-    
-    func presenceUpdatePublisherFull() -> AnyPublisher<PresenceUpdate, Never> {
-        presenceUpdateSubject
-            .map(\.1)
-            .eraseToAnyPublisher()
-    }
-    
-    func receivePresenceUpdate(userId: String, presenceUpdate: PresenceUpdate) {
-        presenceUpdateSubject.send((userId, presenceUpdate))
-    }
-    
-    // MARK: - User Subject
-    private let userSubject = PassthroughSubject<(String, User), Never>()
-    
-    func usersPublisher(for userId: String) -> AnyPublisher<User, Never> {
-        userSubject
-            .filter { $0.0 == userId}
-            .map { $0.1 }
-            .eraseToAnyPublisher()
-    }
-    
-    func usersPublisherFull() -> AnyPublisher<User, Never> {
-        userSubject
-            .map(\.1)
-            .eraseToAnyPublisher()
-    }
-    
-    func receiveUser(userId: String, user: User) {
-        userSubject.send((userId, user))
     }
         
     // MARK: - Variables
@@ -201,6 +158,7 @@ class DiscordWebSocket: NSObject, ObservableObject {
         self.urlSession = URLSession(configuration: config, delegate: self, delegateQueue: operationQueue)
     }
     
+    // MARK: - Connect
     func connect() {
         let token = KeychainHelper.standard.read(service: "auth", account: "token")
         
@@ -226,6 +184,7 @@ class DiscordWebSocket: NSObject, ObservableObject {
         }
     }
     
+    // MARK: - Attempt Reconnect
     private func attemptReconnect() {
         guard !isReconnecting && reconnectAttempts < maxReconnectAttempts else {
             if reconnectAttempts >= maxReconnectAttempts {
@@ -264,6 +223,7 @@ class DiscordWebSocket: NSObject, ObservableObject {
         }
     }
     
+    // MARK: - Perform Connect
     private func performConnect() {
         // Try without compression first, then with compression if that fails
         let baseURL = "wss://gateway.discord.gg/?encoding=json&v=10"
@@ -299,6 +259,7 @@ class DiscordWebSocket: NSObject, ObservableObject {
         Log.network.notice("Connection attempt #\(self.connectionAttempts)")
     }
     
+    // MARK: - Initialize decompression
     private func initializeDecompression() {
         // Clean up existing stream if any
         if let pointer = compressionStreamPointer {
@@ -315,6 +276,7 @@ class DiscordWebSocket: NSObject, ObservableObject {
         }
     }
     
+    // MARK: - Disconnect
     func disconnect() {
         isConnected = false
         isReconnecting = false
@@ -337,6 +299,7 @@ class DiscordWebSocket: NSObject, ObservableObject {
         Log.network.notice("Disconnected from Discord WebSocket")
     }
     
+    // MARK: - Start Listening
     private func startListening() {
         guard webSocketTask != nil else {
             Log.network.error("WebSocket task is nil, cannot start listening")
@@ -494,9 +457,9 @@ class DiscordWebSocket: NSObject, ObservableObject {
                 self.lastSequence = seq
             }
             DispatchQueue.main.async {
-                self.receivePresenceUpdate(userId: update.user.id, presenceUpdate: update)
+                Log.network.info("Updated presence for user \(update.user.id): \(update.status)")
+                self.users[update.user.id]?.status = update.status
             }
-            Log.network.info("Updated presence for user \(update.user.id): \(update.status)")
         }
         // Try to decode as a Ready event
         // MARK: - READY EVENT
@@ -517,15 +480,14 @@ class DiscordWebSocket: NSObject, ObservableObject {
              */
             DispatchQueue.main.async {
                 for user in ready.users {
-                    self.receiveUser(userId: user.id, user: user)
-                    Log.network.info("Sent user \(user.id)")
+                    self.users[user.id] = user
                 }
-                self.receiveUser(userId: "me", user: ready.user)
-                Log.network.info("Send my profie")
+                Log.network.info("Updated user profie")
+                self.user = ready.user
                 for guild in ready.guilds {
-                    self.receiveGuild(guildId: guild.id, guild: guild)
-                    Log.network.info("Send guild \(guild.id)")
+                    self.guilds[guild.id] = guild
                 }
+                self.user_settings = ready.user_settings
             }
         }
         // Try to decode as a Ready supplemental event
@@ -537,11 +499,9 @@ class DiscordWebSocket: NSObject, ObservableObject {
                 self.lastSequence = seq
             }
             
-            
             DispatchQueue.main.async {
                 for friend in readySupplemental.merged_presences.friends {
-                    let presenceUpdate = PresenceUpdate(user: PresenceUser(id: friend.user_id), status: friend.status)
-                    self.receivePresenceUpdate(userId: friend.user_id, presenceUpdate: presenceUpdate)
+                    self.users[friend.user_id]?.status = friend.status
                     Log.network.info("Updated presence for user \(friend.user_id): \(friend.status)")
                 }
                 self.ready = true

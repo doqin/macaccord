@@ -66,8 +66,8 @@ class ImageCacheManager: ObservableObject {
 // MARK: - Simple Cached AsyncImage View
 struct CachedAsyncImage: View {
     let url: URL?
-    let placeholder: Image
-    let errorImage: Image
+    let placeholder: AnyView
+    let errorImage: AnyView
     
     @State private var image: Image?
     @State private var isLoading = false
@@ -75,8 +75,8 @@ struct CachedAsyncImage: View {
     
     init(
         url: URL?,
-        placeholder: Image = Image(systemName: "photo"),
-        errorImage: Image = Image(systemName: "photo.fill")
+        placeholder: AnyView = AnyView(Image(systemName: "photo")),
+        errorImage: AnyView = AnyView(Image(systemName: "photo.fill"))
     ) {
         self.url = url
         self.placeholder = placeholder
@@ -94,12 +94,6 @@ struct CachedAsyncImage: View {
             } else {
                 placeholder
                     .foregroundColor(.secondary)
-                    .overlay {
-                        if isLoading {
-                            ProgressView()
-                                .scaleEffect(0.5)
-                        }
-                    }
             }
         }
         .task(id: url) {
@@ -171,8 +165,8 @@ struct CachedAsyncImageWithContent<Content: View>: View {
 // MARK: - Animated image support for GIF (macOS)
 struct AnimatedCachedImage: View {
     let url: URL?
-    let placeholder: Image
-    let errorImage: Image
+    let placeholder: AnyView
+    let errorImage: AnyView
     var contentMode: ContentMode = .fit
     
     @State private var nsImage: NSImage?
@@ -181,8 +175,8 @@ struct AnimatedCachedImage: View {
     
     init(
         url: URL?,
-        placeholder: Image = Image(systemName: "photo"),
-        errorImage: Image = Image(systemName: "photo.fill"),
+        placeholder: AnyView = AnyView(Image(systemName: "photo")),
+        errorImage: AnyView = AnyView(Image(systemName: "photo.fill")),
         contentMode: ContentMode = .fit
     ) {
         self.url = url
@@ -203,12 +197,6 @@ struct AnimatedCachedImage: View {
             } else {
                 placeholder
                     .foregroundColor(.secondary)
-                    .overlay {
-                        if isLoading {
-                            ProgressView()
-                                .scaleEffect(0.5)
-                        }
-                    }
             }
         }
         .task(id: url) {

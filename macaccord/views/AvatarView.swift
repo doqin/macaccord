@@ -14,19 +14,21 @@ struct AvatarView: View {
     let size: CGFloat
     var isShowStatus: Bool = false
     
-    @EnvironmentObject var userData: UserData
+    @EnvironmentObject var discordWebSocket: DiscordWebSocket
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             CachedAsyncImage(
-                url: userData.users[userId]?.avatarURL,
+                url: discordWebSocket.users[userId]?.avatarURL,
                 placeholder:
+                    AnyView(
                     Image(systemName: "person.circle.fill")
-                    .resizable()
+                    .resizable())
                 ,
                 errorImage:
+                    AnyView(
                     Image(systemName: "questionmark.circle")
-                    .resizable()
+                    .resizable())
             )
             .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
@@ -40,7 +42,7 @@ struct AvatarView: View {
                 }
             }
             if isShowStatus {
-                switch userData.users[userId]?.status ?? "offline" {
+                switch discordWebSocket.users[userId]?.status ?? "offline" {
                 case "online":
                     Circle()
                         .fill(Color(red: 66.0/255, green: 162.0/255, blue: 90.0/255)) // green
@@ -80,12 +82,4 @@ struct AvatarView: View {
             }
         }
     }
-}
-
-#Preview {
-    let userData = UserData()
-    userData.users["672642067050135562"] = User(id: "672642067050135562", username: "gayce", avatar: "b04f7a78903118afb68d17f079599a5f", status: "idle")
-    return AvatarView(userId: "672642067050135562", size: 128, isShowStatus: true)
-            .environmentObject(userData)
-            .frame(width: 256, height: 256)
 }

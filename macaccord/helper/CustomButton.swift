@@ -20,9 +20,9 @@ struct CustomButton<Label: View, Background: View>: View {
             action()
         } label: {
             label()
-        }
-        .onHover { isHovering in
-            isHovered = isHovering
+            .onHover { isHovering in
+                isHovered = isHovering
+            }
         }
         .background(alignment: .center) {
             background(isHovered)
